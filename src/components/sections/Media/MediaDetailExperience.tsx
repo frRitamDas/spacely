@@ -7,20 +7,56 @@ import { Button, Image } from "@heroui/react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { HiArrowLeft, HiCalendarDays, HiCheckCircle, HiClock, HiPlay, HiShare, HiStar } from "react-icons/hi2";
-import { Movie, TV } from "tmdb-ts/dist/types";
 import { MovieDetails } from "tmdb-ts/dist/types/movies";
 import { TvShowDetails } from "tmdb-ts/dist/types/tv-shows";
 import { SavedMovieDetails } from "@/types/movie";
 
-type MediaDetail = (MovieDetails | TvShowDetails) & {
-  images?: { backdrops?: Array<{ file_path?: string | null }>; logos?: Array<{ file_path?: string | null; iso_639_1?: string | null }> };
-  videos?: { results?: Array<{ key: string; site: string; type: string; official?: boolean; name?: string }> };
-  credits?: { cast?: Array<{ id: number; name: string; character?: string; profile_path?: string | null }> };
-  recommendations?: { results?: Array<Movie | TV> };
-  similar?: { results?: Array<Movie | TV> };
+type MediaImage = {
+  file_path?: string | null;
+  iso_639_1?: string | null;
 };
 
-interface Props { media: MediaDetail; type: "movie" | "tv"; }
+type MediaVideo = {
+  key: string;
+  site: string;
+  type: string;
+  official?: boolean;
+  name?: string;
+};
+
+type MediaCastMember = {
+  id: number;
+  name: string;
+  character?: string;
+  profile_path?: string | null;
+};
+
+// TMDB's Recommendation type intentionally has optional poster_path/title/name
+// fields, so it is not assignable to the stricter Movie/TV list types. Keep the
+// detail-page rail structural instead of pretending recommendation payloads are
+// complete Movie/TV objects.
+type RelatedMedia = {
+  id: number;
+  poster_path?: string | null;
+  title?: string;
+  name?: string;
+};
+
+type MediaDetail = (MovieDetails | TvShowDetails) & {
+  images?: {
+    backdrops?: MediaImage[];
+    logos?: MediaImage[];
+  };
+  videos?: { results?: MediaVideo[] };
+  credits?: { cast?: MediaCastMember[] };
+  recommendations?: { results?: RelatedMedia[] };
+  similar?: { results?: RelatedMedia[] };
+};
+
+interface Props {
+  media: MediaDetail;
+  type: "movie" | "tv";
+}
 
 const MediaDetailExperience: React.FC<Props> = ({ media, type }) => {
   const isMovie = type === "movie";
@@ -57,7 +93,7 @@ const MediaDetailExperience: React.FC<Props> = ({ media, type }) => {
     </section>
     <section className="relative z-10 mx-auto grid max-w-[1500px] gap-4 px-5 pb-14 sm:px-8 lg:grid-cols-[1.3fr_.7fr] lg:px-12"><div className="spacely-card rounded-3xl p-6 sm:p-8"><div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/35"><HiCheckCircle className="size-4" /> About this title</div><p className="mt-4 max-w-3xl text-sm leading-7 text-white/60 sm:text-base">{media.overview || "No synopsis is available for this title."}</p></div><div className="spacely-card grid grid-cols-2 rounded-3xl p-5 sm:p-7"><div className="border-b border-white/[0.07] pb-4"><p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/30">Release</p><p className="mt-2 flex items-center gap-2 text-sm font-bold text-white/80"><HiCalendarDays className="size-4 text-white/45" /> {year || "—"}</p></div><div className="border-b border-l border-white/[0.07] pb-4 pl-4"><p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/30">Rating</p><p className="mt-2 flex items-center gap-2 text-sm font-bold text-white/80"><HiStar className="size-4" /> {media.vote_average?.toFixed(1) || "—"}</p></div><div className="pt-4"><p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/30">Format</p><p className="mt-2 text-sm font-bold text-white/80">{isMovie ? "Feature film" : `${seasons || 0} seasons · ${episodes || 0} episodes`}</p></div><div className="border-l border-white/[0.07] pl-4 pt-4"><p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/30">Runtime</p><p className="mt-2 flex items-center gap-2 text-sm font-bold text-white/80"><HiClock className="size-4 text-white/45" /> {runtime ? `${runtime} min` : "Series"}</p></div></div></section>
     {cast.length > 0 && <section className="mx-auto max-w-[1500px] px-5 pb-14 sm:px-8 lg:px-12"><div className="mb-5"><p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">People</p><h2 className="mt-1 text-2xl font-black tracking-tight text-white">Cast</h2></div><div className="flex gap-3 overflow-x-auto pb-2 [scrollbar-width:none]">{cast.map((person) => <div key={person.id} className="w-28 shrink-0 sm:w-32"><div className="aspect-[3/4] overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04]">{person.profile_path ? <Image removeWrapper src={getImageUrl(person.profile_path, "avatar")} alt={person.name} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-2xl font-black text-white/20">{person.name.charAt(0)}</div>}</div><p className="mt-2 truncate text-xs font-bold text-white/75">{person.name}</p><p className="mt-0.5 truncate text-[10px] text-white/30">{person.character || "Cast"}</p></div>)}</div></section>}
-    {related.length > 0 && <section className="mx-auto max-w-[1500px] px-5 pb-20 sm:px-8 lg:px-12"><p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Because you watched this</p><h2 className="mt-1 text-2xl font-black tracking-tight text-white">More like this</h2><div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">{related.map((item) => { const itemMovie = "title" in item; const itemTitle = itemMovie ? mutateMovieTitle(item as Movie) : mutateTvShowTitle(item as TV); return <Link key={`${itemMovie ? "movie" : "tv"}-${item.id}`} href={`/${itemMovie ? "movie" : "tv"}/${item.id}`} className="group"><div className="aspect-[2/3] overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04]"><Image removeWrapper src={getImageUrl(item.poster_path, "poster")} alt={itemTitle} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]" /></div><p className="mt-2 truncate text-xs font-bold text-white/70 group-hover:text-white">{itemTitle}</p></Link>; })}</div></section>}
+    {related.length > 0 && <section className="mx-auto max-w-[1500px] px-5 pb-20 sm:px-8 lg:px-12"><p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Because you watched this</p><h2 className="mt-1 text-2xl font-black tracking-tight text-white">More like this</h2><div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">{related.map((item) => { const itemMovie = Boolean(item.title) && !item.name; const itemTitle = itemMovie ? item.title! : item.name || item.title || "Untitled"; return <Link key={`${itemMovie ? "movie" : "tv"}-${item.id}`} href={`/${itemMovie ? "movie" : "tv"}/${item.id}`} className="group"><div className="aspect-[2/3] overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04]"><Image removeWrapper src={getImageUrl(item.poster_path, "poster")} alt={itemTitle} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]" /></div><p className="mt-2 truncate text-xs font-bold text-white/70 group-hover:text-white">{itemTitle}</p></Link>; })}</div></section>}
   </div>;
 };
 
