@@ -10,7 +10,6 @@ import { getLoadingLabel } from "@/utils/movies";
 import { Spinner } from "@heroui/react";
 import { useInViewport } from "@mantine/hooks";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { notFound } from "next/navigation";
 import { useEffect } from "react";
 import TvShowPosterCard from "../TV/Cards/Poster";
 
@@ -32,12 +31,18 @@ const TvShowDiscoverList = () => {
     });
 
   useEffect(() => {
-    if (inViewport) {
-      fetchNextPage();
+    if (inViewport && !isPending && hasNextPage && !isFetchingNextPage) {
+      void fetchNextPage();
     }
-  }, [inViewport]);
+  }, [fetchNextPage, hasNextPage, inViewport, isFetchingNextPage, isPending]);
 
-  if (status === "error") return notFound();
+  if (status === "error") {
+    return (
+      <div className="flex min-h-64 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-center text-sm text-foreground-500">
+        Unable to load TV series right now. Please try again in a moment.
+      </div>
+    );
+  }
 
   if (isPending) {
     return (
@@ -54,11 +59,11 @@ const TvShowDiscoverList = () => {
   return (
     <div className="flex flex-col items-center justify-center gap-10">
       <div className="movie-grid">
-        {data.pages.map((page) => {
-          return page.results.map((tv) => {
-            return <TvShowPosterCard key={tv.id} tv={tv} variant="bordered" />;
-          });
-        })}
+        {data.pages.flatMap((page) =>
+          page.results.map((tv) => (
+            <TvShowPosterCard key={tv.id} tv={tv} variant="bordered" />
+          )),
+        )}
       </div>
       <div ref={ref} className="flex h-24 items-center justify-center">
         {isFetchingNextPage && (
