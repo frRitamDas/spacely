@@ -26,13 +26,19 @@ const Hero: React.FC = () => {
     staleTime: 1000 * 60 * 10,
   });
 
-  const heroItems = useMemo(() => (data?.results ?? []).filter((item) => item.backdrop_path).slice(0, 8), [data]);
+  const heroItems = useMemo(
+    () => (data?.results ?? []).filter((item) => item.backdrop_path).slice(0, 8),
+    [data],
+  );
 
   useEffect(() => setIndex(0), [content]);
 
   useEffect(() => {
     if (heroItems.length < 2) return;
-    const timer = window.setInterval(() => setIndex((current) => (current + 1) % heroItems.length), 9000);
+    const timer = window.setInterval(
+      () => setIndex((current) => (current + 1) % heroItems.length),
+      9000,
+    );
     return () => window.clearInterval(timer);
   }, [heroItems.length, content]);
 
@@ -53,7 +59,9 @@ const Hero: React.FC = () => {
   const media = heroItems[index] ?? heroItems[0];
   const isMovie = "title" in media;
   const title = isMovie ? mutateMovieTitle(media as Movie) : mutateTvShowTitle(media as TV);
-  const year = isMovie ? media.release_date?.slice(0, 4) || "—" : media.first_air_date?.slice(0, 4) || "—";
+  const year = isMovie
+    ? media.release_date?.slice(0, 4) || "—"
+    : media.first_air_date?.slice(0, 4) || "—";
   const backdrop = getImageUrl(media.backdrop_path, "backdrop", true);
   const detailHref = isMovie ? `/movie/${media.id}` : `/tv/${media.id}`;
 
@@ -101,7 +109,9 @@ const Hero: React.FC = () => {
               <span>{media.vote_average.toFixed(1)} Rating</span>
             </div>
 
-            <h1 className={`${Saira.className} max-w-[700px] text-[3.8rem] font-black uppercase leading-[0.88] tracking-[-0.045em] text-white drop-shadow-2xl sm:text-6xl md:text-8xl lg:text-[7rem]`}>
+            <h1
+              className={`${Saira.className} line-clamp-2 max-w-[700px] text-[3.8rem] font-black uppercase leading-[0.88] tracking-[-0.045em] text-white drop-shadow-2xl sm:text-6xl md:text-8xl lg:text-[7rem]`}
+            >
               {title}
             </h1>
 
@@ -148,10 +158,20 @@ const Hero: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button type="button" onClick={() => move(-1)} aria-label="Previous featured title" className="flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.08] text-white backdrop-blur-xl transition hover:bg-white/15">
+            <button
+              type="button"
+              onClick={() => move(-1)}
+              aria-label="Previous featured title"
+              className="flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.08] text-white backdrop-blur-xl transition hover:bg-white/15"
+            >
               <HiChevronLeft className="size-5" />
             </button>
-            <button type="button" onClick={() => move(1)} aria-label="Next featured title" className="flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.08] text-white backdrop-blur-xl transition hover:bg-white/15">
+            <button
+              type="button"
+              onClick={() => move(1)}
+              aria-label="Next featured title"
+              className="flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.08] text-white backdrop-blur-xl transition hover:bg-white/15"
+            >
               <HiChevronRight className="size-5" />
             </button>
           </div>
@@ -159,7 +179,14 @@ const Hero: React.FC = () => {
 
         <div className="mb-3 flex gap-1.5">
           {heroItems.map((item, itemIndex) => (
-            <button key={item.id} type="button" aria-label={`Show featured title ${itemIndex + 1}`} aria-current={itemIndex === index ? "true" : undefined} onClick={() => setIndex(itemIndex)} className={`h-1 rounded-full transition-all duration-300 ${itemIndex === index ? "w-9 bg-white" : "w-2 bg-white/25 hover:bg-white/55"}`} />
+            <button
+              key={item.id}
+              type="button"
+              aria-label={`Show featured title ${itemIndex + 1}`}
+              aria-current={itemIndex === index ? "true" : undefined}
+              onClick={() => setIndex(itemIndex)}
+              className={`h-1 rounded-full transition-all duration-300 ${itemIndex === index ? "w-9 bg-white" : "w-2 bg-white/25 hover:bg-white/55"}`}
+            />
           ))}
         </div>
 
