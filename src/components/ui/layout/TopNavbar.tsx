@@ -6,24 +6,62 @@ import { cn } from "@/utils/helpers";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 import { useWindowScroll } from "@mantine/hooks";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import FullscreenToggleButton from "../button/FullscreenToggleButton";
 import UserProfileButton from "../button/UserProfileButton";
 import SearchInput from "../input/SearchInput";
 import ThemeSwitchDropdown from "../input/ThemeSwitchDropdown";
-import BrandLogo from "../other/BrandLogo";
 
 const TopNavbar = () => {
   const pathName = usePathname();
+  const router = useRouter();
   const [{ y }] = useWindowScroll();
-  const opacity = Math.min((y / 160) * 0.92, 0.92);
   const hrefs = siteConfig.navItems.map((item) => item.href);
   const show = hrefs.includes(pathName);
   const tv = pathName.includes("/tv/");
   const player = pathName.includes("/player");
   const auth = pathName.includes("/auth");
+  const home = pathName === "/";
 
   if (auth || player) return null;
+
+  if (home) {
+    return (
+      <div className="pointer-events-none fixed inset-x-0 top-5 z-[100] flex justify-center px-4 md:top-7">
+        <nav className="pointer-events-auto flex items-center gap-1 rounded-full border border-white/10 bg-black/60 p-1.5 shadow-2xl shadow-black/40 backdrop-blur-2xl md:gap-2 md:p-2">
+          <Link
+            href="/"
+            className="rounded-full bg-white px-6 py-3 text-sm font-extrabold text-black shadow-lg transition hover:bg-white/90 md:px-8 md:text-base"
+          >
+            Home
+          </Link>
+          <Link
+            href="/?content=movie"
+            className="rounded-full px-5 py-3 text-sm font-bold text-white/70 transition hover:bg-white/10 hover:text-white md:px-6 md:text-base"
+          >
+            Movies
+          </Link>
+          <Link
+            href="/?content=tv"
+            className="rounded-full px-5 py-3 text-sm font-bold text-white/70 transition hover:bg-white/10 hover:text-white md:px-6 md:text-base"
+          >
+            TV
+          </Link>
+          <span className="mx-1 hidden h-7 w-px bg-white/15 sm:block" />
+          <Link
+            href="/search"
+            aria-label="Search"
+            className="flex size-11 items-center justify-center rounded-full text-white/75 transition hover:bg-white/10 hover:text-white"
+          >
+            <span className="text-xl">⌕</span>
+          </Link>
+          <UserProfileButton />
+        </nav>
+      </div>
+    );
+  }
+
+  const opacity = Math.min((y / 160) * 0.92, 0.92);
 
   return (
     <Navbar
@@ -42,11 +80,9 @@ const TopNavbar = () => {
         className="pointer-events-none absolute inset-0 -z-10 border-b border-white/5 bg-background/80 backdrop-blur-2xl"
         style={{ opacity: show ? 0.96 : opacity }}
       />
-
       <NavbarBrand className="min-w-fit gap-2">
-        {show ? <BrandLogo /> : <BackButton href={tv ? "/?content=tv" : "/"} />}
+        <BackButton href={tv ? "/?content=tv" : "/"} />
       </NavbarBrand>
-
       {show && !pathName.startsWith("/search") && (
         <NavbarContent className="hidden w-full max-w-xl gap-2 md:flex" justify="center">
           <NavbarItem className="w-full">
@@ -59,7 +95,6 @@ const TopNavbar = () => {
           </NavbarItem>
         </NavbarContent>
       )}
-
       <NavbarContent justify="end" className="gap-1">
         <NavbarItem className="flex items-center gap-1 rounded-full border border-white/5 bg-white/[0.03] p-1 backdrop-blur-xl">
           <ThemeSwitchDropdown />
