@@ -6,6 +6,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { usePathname, useRouter } from "next/navigation";
 import useDiscoverFilters from "@/hooks/useDiscoverFilters";
 import SpacelyRuntime from "@/components/ui/layout/SpacelyRuntime";
@@ -21,17 +22,37 @@ export default function Providers({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
       <HeroUIProvider navigate={push}>
-        <ToastProvider placement="top-right" maxVisibleToasts={1} toastOffset={10} toastProps={{ shouldShowTimeoutProgress: true, timeout: 5000, classNames: { content: "mr-7", closeButton: "opacity-100 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-auto" } }} />
+        <ToastProvider
+          placement="top-right"
+          maxVisibleToasts={1}
+          toastOffset={10}
+          toastProps={{
+            shouldShowTimeoutProgress: true,
+            timeout: 5000,
+            classNames: {
+              content: "mr-7",
+              closeButton:
+                "opacity-100 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-auto",
+            },
+          }}
+        />
         <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem>
-          <Suspense>
-            <ProgressProvider options={{ showSpinner: false }} color={`hsl(var(--heroui-${tv ? "warning" : "primary"}))`}>
-              {children}
-            </ProgressProvider>
-          </Suspense>
+          <NuqsAdapter>
+            <Suspense>
+              <ProgressProvider
+                options={{ showSpinner: false }}
+                color={`hsl(var(--heroui-${tv ? "warning" : "primary"}))`}
+              >
+                {children}
+              </ProgressProvider>
+            </Suspense>
+          </NuqsAdapter>
         </NextThemesProvider>
         <SpacelyRuntime />
       </HeroUIProvider>
-      <div className="hidden md:block"><ReactQueryDevtools initialIsOpen={false} /></div>
+      <div className="hidden md:block">
+        <ReactQueryDevtools initialIsOpen={false} />
+      </div>
     </QueryClientProvider>
   );
 }
