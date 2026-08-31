@@ -2,11 +2,11 @@
 
 import BackButton from "@/components/ui/button/BackButton";
 import { siteConfig } from "@/config/site";
-import { cn } from "@/utils/helpers";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 import { useWindowScroll } from "@mantine/hooks";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { BiSearchAlt2 } from "react-icons/bi";
 import FullscreenToggleButton from "../button/FullscreenToggleButton";
 import UserProfileButton from "../button/UserProfileButton";
 import SearchInput from "../input/SearchInput";
@@ -14,7 +14,6 @@ import ThemeSwitchDropdown from "../input/ThemeSwitchDropdown";
 
 const TopNavbar = () => {
   const pathName = usePathname();
-  const router = useRouter();
   const [{ y }] = useWindowScroll();
   const hrefs = siteConfig.navItems.map((item) => item.href);
   const show = hrefs.includes(pathName);
@@ -53,7 +52,7 @@ const TopNavbar = () => {
             aria-label="Search"
             className="flex size-11 items-center justify-center rounded-full text-white/75 transition hover:bg-white/10 hover:text-white"
           >
-            <span className="text-xl">⌕</span>
+            <BiSearchAlt2 className="size-5" />
           </Link>
           <UserProfileButton />
         </nav>
