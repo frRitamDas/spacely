@@ -41,8 +41,13 @@ const UserProfileButton: React.FC = () => {
 
   if (guest) return profileButton;
 
+  const handleAccountChange = (open: boolean) => {
+    setAccountOpen(open);
+    if (!open) setSettingsOpen(false);
+  };
+
   return (
-    <Popover placement="bottom-end" offset={10} isOpen={accountOpen} onOpenChange={setAccountOpen}>
+    <Popover placement="bottom-end" offset={10} isOpen={accountOpen} onOpenChange={handleAccountChange}>
       <PopoverTrigger>{profileButton}</PopoverTrigger>
       <PopoverContent className="overflow-visible bg-transparent p-0 shadow-none">
         {settingsOpen ? <SettingsPopover onBack={() => setSettingsOpen(false)} /> : (
