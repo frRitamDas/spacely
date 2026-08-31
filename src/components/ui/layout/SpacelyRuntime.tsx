@@ -2,7 +2,6 @@
 
 import { tmdb } from "@/api/tmdb";
 import useSpacelySettings from "@/hooks/useSpacelySettings";
-import { readSettings } from "@/utils/settings";
 import { useEffect, useState } from "react";
 import { HiXMark } from "react-icons/hi2";
 
@@ -44,11 +43,7 @@ export default function SpacelyRuntime() {
     <div className="fixed inset-0 z-[500] flex items-center justify-center overflow-hidden bg-black text-white" onPointerDown={() => setIdle(false)} onKeyDown={() => setIdle(false)} role="dialog" aria-label="Spacely ambient screensaver">
       {artwork && <div className="absolute inset-0 bg-cover bg-center opacity-40" style={{ backgroundImage: `url(${artwork})` }} />}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,.35)_45%,#000_100%)]" />
-      <div className="relative z-10 text-center">
-        <p className="text-[10px] font-black uppercase tracking-[0.35em] text-white/35">Spacely · Ambient</p>
-        <time className="mt-4 block text-7xl font-black tracking-[-0.06em] sm:text-9xl">{now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
-        <p className="mt-3 text-sm text-white/45">{now.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" })}</p>
-      </div>
+      <div className="relative z-10 text-center"><p className="text-[10px] font-black uppercase tracking-[0.35em] text-white/35">Spacely · Ambient</p><time className="mt-4 block text-7xl font-black tracking-[-0.06em] sm:text-9xl">{now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time><p className="mt-3 text-sm text-white/45">{now.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" })}</p></div>
       <button type="button" onClick={() => setIdle(false)} aria-label="Exit screensaver" className="absolute right-6 top-6 z-20 flex size-11 items-center justify-center rounded-full border border-white/10 bg-white/10 backdrop-blur-xl"><HiXMark className="size-5" /></button>
     </div>
   );
