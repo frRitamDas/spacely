@@ -13,8 +13,7 @@ export type VidlinkPlayerMessage = BasePlayerEventEnvelope<VidlinkEventData>;
 export interface VidkingEventData { event: PlayerEventType; currentTime: number; duration: number; id: string | number; mediaType: ContentType; season?: number; episode?: number; progress?: number; }
 export type VidkingPlayerMessage = BasePlayerEventEnvelope<VidkingEventData>;
 export interface UnifiedPlayerEventData { event: PlayerEventType; currentTime: number; duration: number; mediaId: string | number; mediaType: ContentType; season?: number; episode?: number; progress?: number; }
-export interface PlayerAdapter<RawMessage extends BasePlayerEventEnvelope<unknown>> { origin: `https://${string}`; parse: (raw: RawMessage) => UnifiedPlayerEventData | null; }
-export type AdapterMap = Record<string, PlayerAdapter<never>>;
+export interface PlayerAdapter<RawMessage extends BasePlayerEventEnvelope<any>> { origin: `https://${string}`; parse: (raw: RawMessage) => UnifiedPlayerEventData | null; }
 
 export const playerAdapters = {
   vidlink: { origin: "https://vidlink.pro", parse: (raw: VidlinkPlayerMessage) => raw.type === "PLAYER_EVENT" ? { ...raw.data, mediaId: raw.data.mtmdbId } : null } satisfies PlayerAdapter<VidlinkPlayerMessage>,
