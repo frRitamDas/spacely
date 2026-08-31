@@ -3,9 +3,9 @@ import { siteConfig } from "@/config/site";
 import { Poppins } from "@/utils/fonts";
 import "../styles/globals.css";
 import "../styles/lightbox.css";
+import "../styles/premium.css";
 import Providers from "./providers";
 import TopNavbar from "@/components/ui/layout/TopNavbar";
-import BottomNavbar from "@/components/ui/layout/BottomNavbar";
 import Sidebar from "@/components/ui/layout/Sidebar";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
@@ -17,52 +17,9 @@ import { Suspense } from "react";
 
 const Disclaimer = dynamic(() => import("@/components/ui/overlay/Disclaimer"));
 
-export const metadata: Metadata = {
-  title: siteConfig.name,
-  applicationName: siteConfig.name,
-  description: siteConfig.description,
-  manifest: "/manifest.json",
-  icons: { icon: siteConfig.favicon },
-  twitter: {
-    card: "summary",
-    title: { default: siteConfig.name, template: siteConfig.name },
-    description: siteConfig.description,
-  },
-  openGraph: {
-    type: "website",
-    siteName: siteConfig.name,
-    title: { default: siteConfig.name, template: siteConfig.name },
-    description: siteConfig.description,
-  },
-  formatDetection: { telephone: false },
-};
-
-export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
-    { media: "(prefers-color-scheme: dark)", color: "#07070A" },
-  ],
-};
+export const metadata: Metadata = { title: siteConfig.name, applicationName: siteConfig.name, description: siteConfig.description, manifest: "/manifest.json", icons: { icon: siteConfig.favicon }, twitter: { card: "summary", title: { default: siteConfig.name, template: siteConfig.name }, description: siteConfig.description }, openGraph: { type: "website", siteName: siteConfig.name, title: { default: siteConfig.name, template: siteConfig.name }, description: siteConfig.description }, formatDetection: { telephone: false } };
+export const viewport: Viewport = { themeColor: [{ media: "(prefers-color-scheme: light)", color: "#FFFFFF" }, { media: "(prefers-color-scheme: dark)", color: "#07070A" }], viewportFit: "cover" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <html suppressHydrationWarning lang="en">
-      <body className={cn("min-h-dvh select-none antialiased", Poppins.className)}>
-        <Suspense>
-          <NuqsAdapter>
-            <Providers>
-              {IS_PRODUCTION && <Disclaimer />}
-              <TopNavbar />
-              <Sidebar>
-                <main className={cn("section-shell", SpacingClasses.main)}>{children}</main>
-              </Sidebar>
-              <BottomNavbar />
-            </Providers>
-          </NuqsAdapter>
-        </Suspense>
-        <SpeedInsights debug={false} />
-        <Analytics debug={false} />
-      </body>
-    </html>
-  );
+  return <html suppressHydrationWarning lang="en"><body className={cn("min-h-dvh select-none antialiased", Poppins.className)}><Suspense><NuqsAdapter><Providers>{IS_PRODUCTION && <Disclaimer />}<TopNavbar /><Sidebar><main className={cn("section-shell", SpacingClasses.main)}>{children}</main></Sidebar></Providers></NuqsAdapter></Suspense><SpeedInsights debug={false} /><Analytics debug={false} /></body></html>;
 }

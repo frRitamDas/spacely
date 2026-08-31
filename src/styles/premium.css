@@ -1,0 +1,12 @@
+/* SPACELY 2026 — restrained OTT surface system */
+:root { --spacely-top-safe: max(0px, env(safe-area-inset-top)); }
+html, body { min-width: 320px; background: #070708; }
+body { overflow-x: clip; }
+.spacely-nav { position: relative; transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease; }
+.spacely-nav::after { content: ""; position: absolute; inset: 1px; border-radius: inherit; pointer-events: none; background: linear-gradient(110deg, rgba(255,255,255,.07), transparent 35%, transparent 70%, rgba(255,255,255,.035)); opacity: .55; }
+.spacely-nav > * { position: relative; z-index: 1; }
+.home-legacy-switcher { display: none !important; }
+.spacely-card { border-radius: 22px; }
+@media (min-width: 768px) { main.section-shell { padding-top: 22px; } }
+@media (max-width: 767px) { .spacely-nav a { min-width: 0; } .spacely-nav a:nth-child(3) { padding-inline: 13px; } }
+@media (prefers-reduced-motion: reduce) { .spacely-nav, .spacely-nav * { transition: none !important; } }
