@@ -4,7 +4,6 @@ import BackToTopButton from "@/components/ui/button/BackToTopButton";
 import { Spinner } from "@heroui/react";
 import { useInViewport } from "@mantine/hooks";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { notFound } from "next/navigation";
 import { memo, useEffect } from "react";
 import MoviePosterCard from "../Movie/Cards/Poster";
 import useDiscoverFilters from "@/hooks/useDiscoverFilters";
@@ -33,12 +32,18 @@ const MovieDiscoverList = () => {
     });
 
   useEffect(() => {
-    if (inViewport && !isPending) {
-      fetchNextPage();
+    if (inViewport && !isPending && hasNextPage && !isFetchingNextPage) {
+      void fetchNextPage();
     }
-  }, [inViewport]);
+  }, [fetchNextPage, hasNextPage, inViewport, isFetchingNextPage, isPending]);
 
-  if (status === "error") return notFound();
+  if (status === "error") {
+    return (
+      <div className="flex min-h-64 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-center text-sm text-foreground-500">
+        Unable to load movies right now. Please try again in a moment.
+      </div>
+    );
+  }
 
   if (isPending) {
     return (
@@ -55,11 +60,11 @@ const MovieDiscoverList = () => {
   return (
     <div className="flex flex-col items-center justify-center gap-10">
       <div className="movie-grid">
-        {data.pages.map((page) => {
-          return page.results.map((movie) => {
-            return <MoviePosterCard key={movie.id} movie={movie} variant="bordered" />;
-          });
-        })}
+        {data.pages.flatMap((page) =>
+          page.results.map((movie) => (
+            <MoviePosterCard key={movie.id} movie={movie} variant="bordered" />
+          )),
+        )}
       </div>
       <div ref={ref} className="flex h-24 items-center justify-center">
         {isFetchingNextPage && <Spinner size="lg" variant="wave" label={getLoadingLabel()} />}
