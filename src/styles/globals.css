@@ -10,27 +10,14 @@
 
 @theme {
   --animate-shine: shine 3s linear infinite;
-
   --font-poppins: var(--font-poppins);
 
   @keyframes shine {
-    0% {
-      background-position: 100%;
-    }
-    100% {
-      background-position: -100%;
-    }
+    0% { background-position: 100%; }
+    100% { background-position: -100%; }
   }
 }
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
   *,
   ::after,
@@ -40,33 +27,49 @@
     border-color: var(--color-gray-200, currentcolor);
   }
 
-  h1 {
-    @apply text-3xl font-black md:text-4xl;
+  html {
+    scroll-behavior: smooth;
+    background: #07070a;
   }
 
-  h2 {
-    @apply text-2xl font-bold md:text-3xl;
+  body {
+    background:
+      radial-gradient(circle at 10% 0%, rgba(0, 111, 238, 0.08), transparent 28rem),
+      radial-gradient(circle at 90% 15%, rgba(122, 66, 255, 0.06), transparent 30rem),
+      var(--color-background);
   }
 
-  h3 {
-    @apply text-xl font-bold md:text-2xl;
+  ::selection {
+    background: color-mix(in srgb, var(--color-primary) 35%, transparent);
   }
 
-  h4 {
-    @apply text-lg font-semibold md:text-xl;
-  }
+  h1 { @apply text-3xl font-black md:text-4xl; }
+  h2 { @apply text-2xl font-bold md:text-3xl; }
+  h3 { @apply text-xl font-bold md:text-2xl; }
+  h4 { @apply text-lg font-semibold md:text-xl; }
+  h5 { @apply text-base font-medium md:text-lg; }
+  h6 { @apply text-sm font-normal md:text-base; }
 
-  h5 {
-    @apply text-base font-medium md:text-lg;
-  }
+  iframe { @apply border-none; }
 
-  h6 {
-    @apply text-sm font-normal md:text-base;
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, currentColor 18%, transparent);
+    border-radius: 999px;
   }
+}
 
-  iframe {
-    @apply border-none;
-  }
+@utility glass {
+  @apply border border-white/10 bg-white/5 backdrop-blur-2xl;
+}
+
+@utility glass-strong {
+  @apply border border-white/10 bg-black/35 backdrop-blur-3xl;
+}
+
+@utility section-shell {
+  @apply mx-auto w-full max-w-[1800px] px-3 md:px-6 lg:px-8;
 }
 
 @utility embla {
@@ -87,4 +90,10 @@
 
 @utility movie-grid {
   @apply grid size-full max-w-6xl grid-cols-2 justify-center gap-2 sm:grid-cols-3 md:gap-4 lg:grid-cols-[repeat(auto-fit,minmax(200px,50px))];
+}
+
+@utility cinematic-vignette {
+  background:
+    radial-gradient(circle at center, transparent 35%, rgba(0,0,0,0.18) 100%),
+    linear-gradient(180deg, rgba(0,0,0,0.16), transparent 30%, rgba(0,0,0,0.55));
 }
