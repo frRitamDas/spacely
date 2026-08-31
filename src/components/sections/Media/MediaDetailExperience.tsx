@@ -29,10 +29,6 @@ type MediaCastMember = {
   profile_path?: string | null;
 };
 
-// Keep this prop type structural. tmdb-ts's AppendToResponse types contain
-// Recommendation[] whose poster_path/title/name fields are optional. They are
-// deliberately different from the stricter Movie/TV list types, so using
-// Movie | TV here creates a false incompatibility at the page boundary.
 type RelatedMedia = {
   id: number;
   poster_path?: string | null;
@@ -77,10 +73,15 @@ interface Props {
   type: "movie" | "tv";
 }
 
+const getMediaYear = (media: MediaDetail, type: Props["type"]): string | undefined => {
+  const date = type === "movie" ? media.release_date : media.first_air_date;
+  return date?.slice(0, 4);
+};
+
 const MediaDetailExperience: React.FC<Props> = ({ media, type }) => {
   const isMovie = type === "movie";
   const title = (isMovie ? media.title ?? media.original_title : media.name ?? media.original_name) || "Untitled";
-  const year = (isMovie ? media.release_date : media.first_air_date)?.slice(0, 4);
+  const year = getMediaYear(media, type);
   const backdrop = getImageUrl(media.backdrop_path, "backdrop", true);
   const poster = getImageUrl(media.poster_path, "poster");
   const runtime = isMovie ? media.runtime : undefined;
@@ -99,9 +100,9 @@ const MediaDetailExperience: React.FC<Props> = ({ media, type }) => {
   const bookmarkData: SavedMovieDetails = {
     type,
     adult: Boolean(media.adult),
-    backdrop_path: media.backdrop_path ?? null,
+    backdrop_path: media.backdrop_path ?? "",
     id: media.id,
-    poster_path: media.poster_path ?? null,
+    poster_path: media.poster_path ?? undefined,
     release_date: (isMovie ? media.release_date : media.first_air_date) || "1900-01-01",
     title,
     vote_average: media.vote_average ?? 0,
