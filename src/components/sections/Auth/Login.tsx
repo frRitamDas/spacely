@@ -2,7 +2,7 @@ import { signIn } from "@/actions/auth";
 import PasswordInput from "@/components/ui/input/PasswordInput";
 import { LoginFormSchema } from "@/schemas/auth";
 import { isEmpty } from "@/utils/helpers";
-import { Google, LockPassword, Mail } from "@/utils/icons";
+import { LockPassword, Mail } from "@/utils/icons";
 import { addToast, Button, Divider, Input, Link } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Turnstile } from "@marsidev/react-turnstile";
@@ -16,6 +16,7 @@ import GoogleLoginButton from "@/components/ui/button/GoogleLoginButton";
 const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
   const router = useRouter();
   const [isVerifying, setIsVerifying] = useState(false);
+  const captchaEnabled = Boolean(env.NEXT_PUBLIC_CAPTCHA_SITE_KEY);
 
   const {
     register,
@@ -25,24 +26,17 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
   } = useForm({
     resolver: zodResolver(LoginFormSchema),
     mode: "onChange",
-    defaultValues: {
-      email: "",
-      loginPassword: "",
-    },
+    defaultValues: { email: "", loginPassword: "" },
   });
 
   const onSubmit = handleSubmit(async (data) => {
-    if (isEmpty(data.captchaToken)) {
+    if (captchaEnabled && isEmpty(data.captchaToken)) {
       setIsVerifying(true);
       return;
     }
 
     const { success, message } = await signIn(data);
-
-    addToast({
-      title: message,
-      color: success ? "success" : "danger",
-    });
+    addToast({ title: message, color: success ? "success" : "danger" });
 
     if (!success) {
       setValue("captchaToken", undefined);
@@ -59,7 +53,7 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
       setIsVerifying(false);
       onSubmit();
     },
-    [setValue, setIsVerifying, onSubmit],
+    [setValue, onSubmit],
   );
 
   const getButtonText = useCallback(() => {
@@ -107,10 +101,10 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
             Forgot password?
           </Link>
         </div>
-        {isVerifying && (
+        {isVerifying && captchaEnabled && (
           <Turnstile
             className="flex h-fit w-full items-center justify-center"
-            siteKey={env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}
+            siteKey={env.NEXT_PUBLIC_CAPTCHA_SITE_KEY!}
             onSuccess={onCaptchaSuccess}
           />
         )}
@@ -131,7 +125,7 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
       </div>
       <GoogleLoginButton isDisabled={isSubmitting || isVerifying} />
       <p className="text-small text-center">
-        Don't have an account?
+        Don&apos;t have an account?
         <Link
           isBlock
           size="sm"
