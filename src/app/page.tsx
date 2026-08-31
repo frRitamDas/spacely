@@ -7,9 +7,9 @@ const HomePageList = dynamic(() => import("@/components/sections/Home/List"));
 
 const HomePage: NextPage = () => {
   return (
-    <div className="-mt-8 flex flex-col gap-10 pb-12 md:gap-14">
+    <div className="flex flex-col gap-10 pb-16 md:gap-16">
       <Hero />
-      <div className="flex flex-col gap-10 md:gap-14">
+      <div className="flex flex-col gap-12 md:gap-16">
         <ContinueWatching />
         <HomePageList />
       </div>
