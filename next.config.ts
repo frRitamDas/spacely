@@ -1,5 +1,5 @@
 import withPWAInit from "@ducanh2912/next-pwa";
-import { NextConfig } from "next/dist/server/config";
+import type { NextConfig } from "next";
 
 const withPWA = withPWAInit({
   dest: "public",
@@ -14,7 +14,6 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
-  // https://github.com/payloadcms/payload/issues/12550#issuecomment-2939070941
   turbopack: {
     resolveExtensions: [".mdx", ".tsx", ".ts", ".jsx", ".js", ".mjs", ".json"],
   },
@@ -24,6 +23,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-const pwa = withPWA(nextConfig);
-
-export default pwa;
+export default withPWA(nextConfig);
