@@ -6,7 +6,6 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { usePathname, useRouter } from "next/navigation";
 import useDiscoverFilters from "@/hooks/useDiscoverFilters";
 import SpacelyRuntime from "@/components/ui/layout/SpacelyRuntime";
@@ -37,16 +36,14 @@ export default function Providers({ children }: PropsWithChildren) {
           }}
         />
         <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem>
-          <NuqsAdapter>
-            <Suspense>
-              <ProgressProvider
-                options={{ showSpinner: false }}
-                color={`hsl(var(--heroui-${tv ? "warning" : "primary"}))`}
-              >
-                {children}
-              </ProgressProvider>
-            </Suspense>
-          </NuqsAdapter>
+          <Suspense>
+            <ProgressProvider
+              options={{ showSpinner: false }}
+              color={`hsl(var(--heroui-${tv ? "warning" : "primary"}))`}
+            >
+              {children}
+            </ProgressProvider>
+          </Suspense>
         </NextThemesProvider>
         <SpacelyRuntime />
       </HeroUIProvider>
