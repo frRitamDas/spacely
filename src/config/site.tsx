@@ -14,8 +14,8 @@ import {
 import { TbFolder, TbFolderFilled } from "react-icons/tb";
 
 export const siteConfig: SiteConfigType = {
-  name: "Cinextma",
-  description: "Your only choice for a free movies and tv shows streaming website.",
+  name: "Spacely",
+  description: "A cinematic movie and TV discovery experience built for fast, personal browsing.",
   favicon: "/favicon.ico",
   navItems: [
     {
@@ -66,69 +66,69 @@ export const siteConfig: SiteConfigType = {
   queryLists: {
     movies: [
       {
-        name: "Today's Trending Movies",
+        name: "Trending Now",
         query: () => tmdb.trending.trending("movie", "day"),
         param: "todayTrending",
       },
       {
-        name: "This Week's Trending Movies",
+        name: "This Week",
         query: () => tmdb.trending.trending("movie", "week"),
         param: "thisWeekTrending",
       },
       {
-        name: "Popular Movies",
+        name: "Popular",
         query: () => tmdb.movies.popular(),
         param: "popular",
       },
       {
-        name: "Now Playing Movies",
+        name: "New Releases",
         query: () => tmdb.movies.nowPlaying(),
         param: "nowPlaying",
       },
       {
-        name: "Upcoming Movies",
+        name: "Coming Soon",
         query: () => tmdb.movies.upcoming(),
         param: "upcoming",
       },
       {
-        name: "Top Rated Movies",
+        name: "Top Rated",
         query: () => tmdb.movies.topRated(),
         param: "topRated",
       },
     ],
     tvShows: [
       {
-        name: "Today's Trending TV Shows",
+        name: "Trending TV",
         query: () => tmdb.trending.trending("tv", "day"),
         param: "todayTrending",
       },
       {
-        name: "This Week's Trending TV Shows",
+        name: "This Week on TV",
         query: () => tmdb.trending.trending("tv", "week"),
         param: "thisWeekTrending",
       },
       {
-        name: "Popular TV Shows",
-        // @ts-expect-error: Property 'adult' is missing in type 'PopularTvShowResult' but required in type 'TV'.
+        name: "Popular TV",
+        // @ts-expect-error: tmdb-ts result omits a required field from the shared TV type.
         query: () => tmdb.tvShows.popular(),
         param: "popular",
       },
       {
-        name: "On The Air TV Shows",
-        // @ts-expect-error: Property 'adult' is missing in type 'OnTheAirResult' but required in type 'TV'.
+        name: "On The Air",
+        // @ts-expect-error: tmdb-ts result omits a required field from the shared TV type.
         query: () => tmdb.tvShows.onTheAir(),
         param: "onTheAir",
       },
       {
-        name: "Top Rated TV Shows",
-        // @ts-expect-error: Property 'adult' is missing in type 'TopRatedTvShowResult' but required in type 'TV'.
+        name: "Top Rated TV",
+        // @ts-expect-error: tmdb-ts result omits a required field from the shared TV type.
         query: () => tmdb.tvShows.topRated(),
         param: "topRated",
       },
     ],
   },
   socials: {
-    github: "https://github.com/wisnuwirayuda15/cinextma",
+    github: "https://github.com/frRitamDas/spacely",
   },
 };
 

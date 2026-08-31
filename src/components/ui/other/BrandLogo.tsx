@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { Saira } from "@/utils/fonts";
 import { cn } from "@/utils/helpers";
-import { Next } from "@/utils/icons";
 import useDiscoverFilters from "@/hooks/useDiscoverFilters";
+import { HiSparkles } from "react-icons/hi2";
 
 export interface BrandLogoProps {
   animate?: boolean;
@@ -18,26 +18,21 @@ const BrandLogo: React.FC<BrandLogoProps> = ({ animate = false, className }) => 
     <Link href="/" className="group">
       <span
         className={cn(
-          "flex items-center bg-linear-to-r from-transparent from-80% via-white to-transparent bg-size-[200%_100%] bg-clip-text bg-position-[40%] text-2xl font-semibold text-foreground/60 md:text-3xl",
-          "tracking-widest transition-[letter-spacing] group-hover:tracking-[0.2em]",
-          {
-            "animate-shine": animate,
-            "text-foreground": !animate,
-          },
+          "flex items-center gap-1.5 bg-linear-to-r from-foreground/70 via-foreground to-foreground/70 bg-clip-text text-2xl font-black text-transparent md:text-3xl",
+          "tracking-[0.16em] transition-all duration-300 group-hover:tracking-[0.22em]",
+          { "animate-shine": animate },
           Saira.className,
           className,
         )}
       >
-        CINE{" "}
-        <span>
-          <Next
-            className={cn("size-full px-[2px] transition-colors", {
-              "text-primary": content === "movie",
-              "text-warning": content === "tv",
-            })}
-          />
-        </span>{" "}
-        TMA
+        <HiSparkles
+          className={cn("size-5 transition-colors md:size-6", {
+            "text-primary": content === "movie",
+            "text-warning": content === "tv",
+            "text-foreground": !content,
+          })}
+        />
+        SPACELY
       </span>
     </Link>
   );

@@ -11,6 +11,7 @@ import { parseAsInteger, useQueryState } from "nuqs";
 import { useMemo } from "react";
 import { MovieDetails } from "tmdb-ts/dist/types/movies";
 import { usePlayerEvents } from "@/hooks/usePlayerEvents";
+
 const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const MoviePlayerHeader = dynamic(() => import("./Header"));
 const MoviePlayerSourceSelection = dynamic(() => import("./SourceSelection"));
@@ -39,27 +40,39 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   usePlayerEvents({ saveHistory: true });
   useDocumentTitle(`Play ${title} | ${siteConfig.name}`);
 
-  const PLAYER = useMemo(() => players[selectedSource] || players[0], [players, selectedSource]);
+  const player = useMemo(() => players[selectedSource] || players[0], [players, selectedSource]);
 
   return (
     <>
       <AdsWarning />
 
-      <div className={cn("relative", SpacingClasses.reset)}>
+      <div className={cn("relative bg-black", SpacingClasses.reset)}>
         <MoviePlayerHeader
           id={movie.id}
           movieName={title}
           onOpenSource={handlers.open}
           hidden={idle && !mobile}
         />
-        <Card shadow="md" radius="none" className="relative h-screen">
-          <Skeleton className="absolute h-full w-full" />
+
+        <Card
+          shadow="none"
+          radius="none"
+          className="relative h-[100svh] overflow-hidden border-0 bg-black"
+        >
+          <div className="cinematic-vignette pointer-events-none absolute inset-0 z-20" />
+          <Skeleton className="absolute inset-0 h-full w-full rounded-none bg-white/5" />
           {seen && (
             <iframe
+              title={`${title} player`}
+              allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
               allowFullScreen
-              key={PLAYER.title}
-              src={PLAYER.source}
-              className={cn("z-10 h-full", { "pointer-events-none": idle && !mobile })}
+              loading="eager"
+              key={player.title}
+              src={player.source}
+              className={cn(
+                "relative z-10 h-full w-full bg-black transition-opacity duration-300",
+                { "pointer-events-none": idle && !mobile },
+              )}
             />
           )}
         </Card>
