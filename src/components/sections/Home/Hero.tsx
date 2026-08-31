@@ -44,15 +44,16 @@ const Hero: React.FC = () => {
       } catch { if (!cancelled) setTrailerKey(null); }
     };
     loadTrailer();
-    const timer = settings.heroTrailers ? window.setTimeout(() => setShowTrailer(true), 5000) : undefined;
-    return () => { cancelled = true; if (timer) window.clearTimeout(timer); };
+    let timer: number | undefined;
+    if (settings.heroTrailers) timer = window.setTimeout(() => setShowTrailer(true), 5000);
+    return () => { cancelled = true; if (timer !== undefined) window.clearTimeout(timer); };
   }, [media?.id, content, settings.heroTrailers]);
 
   useEffect(() => {
     if (!media?.backdrop_path) return;
     const root = document.documentElement;
     root.style.setProperty("--spacely-ambience-image", `url(${getImageUrl(media.backdrop_path, "backdrop", true)})`);
-    return () => root.style.removeProperty("--spacely-ambience-image");
+    return () => { root.style.removeProperty("--spacely-ambience-image"); };
   }, [media?.backdrop_path]);
 
   if (isPending) return <Skeleton className="h-[700px] w-full rounded-none md:h-[760px]" />;
