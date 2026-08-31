@@ -1,6 +1,9 @@
+import { Database } from "@/utils/supabase/types";
 import { ContentType } from ".";
 
-export interface SavedMovieDetails {
+export type HistoryDetail = Database["public"]["Tables"]["histories"]["Row"];
+
+export type SavedMovieDetails = {
   adult: boolean;
   type: ContentType;
   backdrop_path: string;
@@ -10,7 +13,7 @@ export interface SavedMovieDetails {
   title: string;
   vote_average: number;
   saved_date: string;
-}
+};
 
 export const DISCOVER_MOVIES_VALID_QUERY_TYPES = [
   "discover",
