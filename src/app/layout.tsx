@@ -14,6 +14,7 @@ import { IS_PRODUCTION, SpacingClasses } from "@/utils/constants";
 import dynamic from "next/dynamic";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
+
 const Disclaimer = dynamic(() => import("@/components/ui/overlay/Disclaimer"));
 
 export const metadata: Metadata = {
@@ -21,51 +22,39 @@ export const metadata: Metadata = {
   applicationName: siteConfig.name,
   description: siteConfig.description,
   manifest: "/manifest.json",
-  icons: {
-    icon: siteConfig.favicon,
-  },
+  icons: { icon: siteConfig.favicon },
   twitter: {
     card: "summary",
-    title: {
-      default: siteConfig.name,
-      template: siteConfig.name,
-    },
+    title: { default: siteConfig.name, template: siteConfig.name },
     description: siteConfig.description,
   },
   openGraph: {
     type: "website",
     siteName: siteConfig.name,
-    title: {
-      default: siteConfig.name,
-      template: siteConfig.name,
-    },
+    title: { default: siteConfig.name, template: siteConfig.name },
     description: siteConfig.description,
   },
-  formatDetection: {
-    telephone: false,
-  },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
-    { media: "(prefers-color-scheme: dark)", color: "#0D0C0F" },
+    { media: "(prefers-color-scheme: dark)", color: "#07070A" },
   ],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html suppressHydrationWarning lang="en">
-      <body className={cn("bg-background min-h-dvh antialiased select-none", Poppins.className)}>
+      <body className={cn("min-h-dvh select-none antialiased", Poppins.className)}>
         <Suspense>
           <NuqsAdapter>
             <Providers>
               {IS_PRODUCTION && <Disclaimer />}
               <TopNavbar />
               <Sidebar>
-                <main className={cn("container mx-auto max-w-full", SpacingClasses.main)}>
-                  {children}
-                </main>
+                <main className={cn("section-shell", SpacingClasses.main)}>{children}</main>
               </Sidebar>
               <BottomNavbar />
             </Providers>
