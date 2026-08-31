@@ -9,7 +9,7 @@ const HomePage: NextPage = () => {
   return (
     <div className="-mt-8 flex flex-col gap-10 pb-12 md:gap-14">
       <Hero />
-      <div className="section-shell flex flex-col gap-10 md:gap-14">
+      <div className="flex flex-col gap-10 md:gap-14">
         <ContinueWatching />
         <HomePageList />
       </div>
