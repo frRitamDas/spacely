@@ -2,9 +2,7 @@ import { Movie, TV } from "tmdb-ts/dist/types";
 
 export type ContentType = "movie" | "tv";
 
-export type Params<T> = {
-  params: Promise<T>;
-};
+export type Params<T> = { params: Promise<T> };
 
 export type ActionResponse<T = null> = Promise<{
   success: boolean;
@@ -56,9 +54,7 @@ export type SiteConfigType = {
     name: "light" | "dark" | "system";
     icon: React.ReactNode;
   }[];
-  socials: {
-    github: string;
-  };
+  socials: { github: string };
 };
 
 export type PlayersProps = {
@@ -70,9 +66,30 @@ export type PlayersProps = {
   resumable?: boolean;
 };
 
-export type Settings = {
+export type AmbienceIntensity = "subtle" | "standard" | "vivid";
+export type ScreensaverDelay = 1 | 2.5 | 5;
+
+export type SpacelySettings = {
   theme: "light" | "dark" | "system";
-  showSpecialSeason: boolean;
+  ambience: boolean;
+  ambienceIntensity: AmbienceIntensity;
+  cardTrailers: boolean;
+  heroTrailers: boolean;
+  continueWatching: boolean;
+  forYou: boolean;
+  newSeasons: boolean;
+  thisWeek: boolean;
+  screensaver: boolean;
+  screensaverDelay: ScreensaverDelay;
+  autoplayNext: boolean;
+  autoSkipIntros: boolean;
+  spoilerShield: boolean;
+  rememberSearches: boolean;
+  pauseWatchHistory: boolean;
   disableAnimation: boolean;
   saveWatchHistory: boolean;
+  showSpecialSeason: boolean;
 };
+
+/** Backwards-compatible alias used by older settings consumers. */
+export type Settings = SpacelySettings;
