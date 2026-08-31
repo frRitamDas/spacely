@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 const Sidebar: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathName = usePathname();
   const hrefs = siteConfig.navItems.map((item) => item.href);
-  const shouldShowSidebar = hrefs.includes(pathName);
+  const shouldShowSidebar = pathName !== "/" && hrefs.includes(pathName);
 
   return (
     <div className="flex h-full">

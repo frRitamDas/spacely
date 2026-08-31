@@ -1,4 +1,13 @@
-import { intervalToDuration } from "date-fns";
+import {
+  intervalToDuration,
+  differenceInSeconds,
+  differenceInMinutes,
+  differenceInHours,
+  differenceInDays,
+  differenceInWeeks,
+  differenceInMonths,
+  differenceInYears,
+} from "date-fns";
 import { Movie, MovieDetails, TV, TvShowDetails } from "tmdb-ts";
 
 /**
@@ -18,24 +27,75 @@ export const movieDurationString = (minutes?: number): string => {
 };
 
 /**
+ * Formats a duration in seconds to a human-readable format.
+ *
+ * @param seconds - The duration in seconds.
+ * @returns A string representing the duration in the format "X:Y:Z" or "Y:Z", where X is the number of hours, Y is the number of minutes, and Z is the number of seconds.
+ */
+export const formatDuration = (seconds: number): string => {
+  const s = Math.round(seconds);
+
+  const hrs = Math.floor(s / 3600);
+  const mins = Math.floor((s % 3600) / 60);
+  const secs = s % 60;
+
+  if (hrs > 0) {
+    return `${hrs}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  } else {
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  }
+};
+
+/**
+ * Returns a string representing the time elapsed since the given date.
+ *
+ * @param date - The date to compare with the current date.
+ * @returns A string representing the time elapsed since the given date.
+ */
+export const timeAgo = (date: Date | string): string => {
+  const now = new Date();
+
+  const seconds = differenceInSeconds(now, date);
+  const minutes = differenceInMinutes(now, date);
+  const hours = differenceInHours(now, date);
+  const days = differenceInDays(now, date);
+  const weeks = differenceInWeeks(now, date);
+  const months = differenceInMonths(now, date);
+  const years = differenceInYears(now, date);
+
+  if (seconds < 20) return "Just now";
+  if (seconds < 60) return `${seconds} seconds ago`;
+
+  if (minutes === 1) return "1 minute ago";
+  if (minutes < 60) return `${minutes} minutes ago`;
+
+  if (hours === 1) return "1 hour ago";
+  if (hours < 24) return `${hours} hours ago`;
+
+  if (days === 1) return "yesterday";
+  if (days < 7) return `${days} days ago`;
+
+  if (weeks === 1) return "1 week ago";
+  if (weeks < 5) return `${weeks} weeks ago`;
+
+  if (months === 1) return "last month";
+  if (months < 12) return `${months} months ago`;
+
+  if (years === 1) return "last year";
+  return `${years} years ago`;
+};
+
+/**
  * Constructs a URL for an image from the TMDB API based on the given path and type.
  * If the path is not provided, a fallback URL is returned based on the image type.
  *
- * @param path - The path to the image resource. Optional.
+ * @param path - The TMDB image path. It may be null when TMDB has no image for the item.
  * @param type - The type of the image, which can be "poster", "backdrop", "title", or "avatar". Defaults to "poster".
  * @param fullSize - A boolean indicating whether to fetch the full-size image. Defaults to false.
  * @returns A string representing the complete URL to the image.
- *
- * @example
- * getImageUrl('somepath.jpg', 'backdrop', true)
- * // returns 'http://image.tmdb.org/t/p/original/somepath.jpg'
- *
- * @example
- * getImageUrl(undefined, 'poster')
- * // returns 'https://dancyflix.com/placeholder.png'
  */
 export const getImageUrl = (
-  path?: string,
+  path?: string | null,
   type: "poster" | "backdrop" | "title" | "avatar" = "poster",
   fullSize?: boolean,
 ): string => {

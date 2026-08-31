@@ -2,9 +2,13 @@ import { Movie, TV } from "tmdb-ts/dist/types";
 
 export type ContentType = "movie" | "tv";
 
-export interface Params<T> {
-  params: Promise<T>;
-}
+export type Params<T> = { params: Promise<T> };
+
+export type ActionResponse<T = null> = Promise<{
+  success: boolean;
+  message?: string;
+  data?: T;
+}>;
 
 export type MovieParam =
   | "todayTrending"
@@ -21,7 +25,7 @@ export type TvShowParam =
   | "onTheAir"
   | "topRated";
 
-export interface QueryList<T extends Movie | TV> {
+export type QueryList<T extends Movie | TV> = {
   name: string;
   query: () => Promise<{
     page: number;
@@ -30,9 +34,9 @@ export interface QueryList<T extends Movie | TV> {
     total_pages: number;
   }>;
   param: T extends Movie ? MovieParam : TvShowParam;
-}
+};
 
-export interface SiteConfigType {
+export type SiteConfigType = {
   name: string;
   description: string;
   favicon: string;
@@ -50,15 +54,42 @@ export interface SiteConfigType {
     name: "light" | "dark" | "system";
     icon: React.ReactNode;
   }[];
-  socials: {
-    github: string;
-  };
-}
+  socials: { github: string };
+};
 
-export interface PlayersProps {
+export type PlayersProps = {
   title: string;
   source: `https://${string}`;
   recommended?: boolean;
   fast?: boolean;
   ads?: boolean;
-}
+  resumable?: boolean;
+};
+
+export type AmbienceIntensity = "subtle" | "standard" | "vivid";
+export type ScreensaverDelay = 1 | 2.5 | 5;
+
+export type SpacelySettings = {
+  theme: "light" | "dark" | "system";
+  ambience: boolean;
+  ambienceIntensity: AmbienceIntensity;
+  cardTrailers: boolean;
+  heroTrailers: boolean;
+  continueWatching: boolean;
+  forYou: boolean;
+  newSeasons: boolean;
+  thisWeek: boolean;
+  screensaver: boolean;
+  screensaverDelay: ScreensaverDelay;
+  autoplayNext: boolean;
+  autoSkipIntros: boolean;
+  spoilerShield: boolean;
+  rememberSearches: boolean;
+  pauseWatchHistory: boolean;
+  disableAnimation: boolean;
+  saveWatchHistory: boolean;
+  showSpecialSeason: boolean;
+};
+
+/** Backwards-compatible alias used by older settings consumers. */
+export type Settings = SpacelySettings;

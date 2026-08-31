@@ -19,22 +19,25 @@ const MoviePlayerHeader: React.FC<MoviePlayerHeaderProps> = ({
     <div
       aria-hidden={hidden ? true : undefined}
       className={cn(
-        "absolute top-0 z-40 flex h-28 w-full items-start justify-between gap-4",
-        "bg-gradient-to-b from-black/80 to-transparent p-2 text-white transition-opacity md:p-4",
-        { "opacity-0": hidden },
+        "absolute top-0 z-40 flex w-full items-start justify-between gap-3 p-3 md:p-5",
+        "bg-linear-to-b from-black/90 via-black/35 to-transparent text-white transition-all duration-300",
+        { "pointer-events-none -translate-y-3 opacity-0": hidden },
       )}
     >
-      <ActionButton label="Back" href={`/movie/${id}`}>
-        <ArrowLeft size={42} />
-      </ActionButton>
-      <div className="absolute left-1/2 hidden -translate-x-1/2 flex-col justify-center text-center sm:flex">
-        <p className="text-shadow-sm text-sm text-white text-shadow-blur-md sm:text-lg lg:text-xl">
-          {movieName}
-        </p>
+      <div className="glass-strong flex items-center gap-2 rounded-2xl p-1 shadow-2xl">
+        <ActionButton label="Back" href={`/movie/${id}`}>
+          <ArrowLeft size={28} />
+        </ActionButton>
       </div>
-      <div className="flex items-center gap-4">
-        <ActionButton label="Sources" tooltip="Sources" onClick={onOpenSource}>
-          <Server size={34} />
+
+      <div className="pointer-events-none hidden max-w-[55vw] rounded-2xl border border-white/10 bg-black/35 px-5 py-2.5 text-center shadow-xl backdrop-blur-xl sm:block">
+        <p className="truncate text-sm font-semibold text-white md:text-base">{movieName}</p>
+        <p className="mt-0.5 text-[10px] uppercase tracking-[0.22em] text-white/45">Now playing</p>
+      </div>
+
+      <div className="glass-strong flex items-center gap-2 rounded-2xl p-1 shadow-2xl">
+        <ActionButton label="Sources" tooltip="Playback sources" onClick={onOpenSource}>
+          <Server size={26} />
         </ActionButton>
       </div>
     </div>
