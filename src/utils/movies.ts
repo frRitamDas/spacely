@@ -89,21 +89,13 @@ export const timeAgo = (date: Date | string): string => {
  * Constructs a URL for an image from the TMDB API based on the given path and type.
  * If the path is not provided, a fallback URL is returned based on the image type.
  *
- * @param path - The path to the image resource. Optional.
+ * @param path - The TMDB image path. It may be null when TMDB has no image for the item.
  * @param type - The type of the image, which can be "poster", "backdrop", "title", or "avatar". Defaults to "poster".
  * @param fullSize - A boolean indicating whether to fetch the full-size image. Defaults to false.
  * @returns A string representing the complete URL to the image.
- *
- * @example
- * getImageUrl('somepath.jpg', 'backdrop', true)
- * // returns 'http://image.tmdb.org/t/p/original/somepath.jpg'
- *
- * @example
- * getImageUrl(undefined, 'poster')
- * // returns 'https://dancyflix.com/placeholder.png'
  */
 export const getImageUrl = (
-  path?: string,
+  path?: string | null,
   type: "poster" | "backdrop" | "title" | "avatar" = "poster",
   fullSize?: boolean,
 ): string => {
