@@ -8,11 +8,18 @@ import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { HiInformationCircle, HiOutlineSpeakerWave, HiOutlineSpeakerXMark, HiPlay } from "react-icons/hi2";
+import {
+  HiChevronLeft,
+  HiChevronRight,
+  HiInformationCircle,
+  HiOutlineSpeakerWave,
+  HiOutlineSpeakerXMark,
+  HiPlay,
+} from "react-icons/hi2";
 import { Saira } from "@/utils/fonts";
 
 const Hero: React.FC = () => {
-  const { data, isPending } = useQuery({
+  const { data, isPending, isError } = useQuery({
     queryKey: ["home-hero"],
     queryFn: () => tmdb.trending.trending("movie", "week"),
     staleTime: 1000 * 60 * 10,
@@ -25,23 +32,44 @@ const Hero: React.FC = () => {
   const [index, setIndex] = useState(0);
   const [muted, setMuted] = useState(true);
 
+  const visibleItems = items.slice(0, 8);
+  const maxIndex = Math.max(visibleItems.length - 1, 0);
+
   useEffect(() => {
-    if (items.length < 2) return;
-    const timer = window.setInterval(() => setIndex((current) => (current + 1) % Math.min(items.length, 8)), 8000);
+    if (visibleItems.length < 2) return;
+    const timer = window.setInterval(() => {
+      setIndex((current) => (current + 1) % visibleItems.length);
+    }, 8000);
     return () => window.clearInterval(timer);
-  }, [items.length]);
+  }, [visibleItems.length]);
+
+  useEffect(() => {
+    if (index > maxIndex) setIndex(0);
+  }, [index, maxIndex]);
 
   if (isPending) {
     return <Skeleton className="h-[760px] w-full rounded-none" />;
   }
 
-  const movie = items[index] ?? items[0];
-  if (!movie || !("title" in movie)) return null;
+  if (isError || !visibleItems.length) {
+    return (
+      <section className="relative flex min-h-[560px] items-center justify-center overflow-hidden bg-black px-6 text-center">
+        <div>
+          <p className="text-lg font-bold text-white">Discover something worth watching.</p>
+          <p className="mt-2 text-sm text-white/50">Trending content is temporarily unavailable.</p>
+        </div>
+      </section>
+    );
+  }
 
+  const movie = visibleItems[index];
   const title = mutateMovieTitle(movie);
   const backdrop = getImageUrl(movie.backdrop_path, "backdrop", true);
   const releaseYear = movie.release_date?.slice(0, 4) || "—";
   const genreText = movie.vote_average >= 8 ? "Top Rated" : "Trending";
+
+  const previous = () => setIndex((current) => (current - 1 + visibleItems.length) % visibleItems.length);
+  const next = () => setIndex((current) => (current + 1) % visibleItems.length);
 
   return (
     <section className="relative -mx-3 min-h-[760px] overflow-hidden bg-black md:-mx-6 lg:-mx-8">
@@ -115,7 +143,8 @@ const Hero: React.FC = () => {
               </Button>
               <Button
                 isIconOnly
-                aria-label={muted ? "Unmute" : "Mute"}
+                aria-label={muted ? "Sound muted" : "Sound enabled"}
+                aria-pressed={!muted}
                 size="lg"
                 radius="full"
                 variant="flat"
@@ -130,28 +159,47 @@ const Hero: React.FC = () => {
       </div>
 
       <div className="absolute inset-x-0 bottom-7 z-20 px-6 md:px-12 lg:px-20">
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 flex items-center justify-between gap-4">
           <div>
             <h2 className="text-lg font-extrabold text-white md:text-xl">Trending Now</h2>
             <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">Popular this week</p>
           </div>
-          <div className="flex gap-1.5">
-            {items.slice(0, 6).map((item, itemIndex) => (
-              <button
-                key={item.id}
-                type="button"
-                aria-label={`Show featured movie ${itemIndex + 1}`}
-                onClick={() => setIndex(itemIndex)}
-                className={`h-1 rounded-full transition-all ${itemIndex === index ? "w-8 bg-white" : "w-2 bg-white/30 hover:bg-white/60"}`}
-              />
-            ))}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={previous}
+              aria-label="Previous featured movie"
+              className="flex size-9 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white/80 backdrop-blur-md transition hover:bg-white/20 hover:text-white"
+            >
+              <HiChevronLeft className="size-5" />
+            </button>
+            <button
+              type="button"
+              onClick={next}
+              aria-label="Next featured movie"
+              className="flex size-9 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white/80 backdrop-blur-md transition hover:bg-white/20 hover:text-white"
+            >
+              <HiChevronRight className="size-5" />
+            </button>
           </div>
         </div>
         <div className="flex gap-4 overflow-hidden">
-          {items.slice(0, 5).map((item) => (
+          {visibleItems.slice(0, 5).map((item) => (
             <div key={item.id} className="w-[72%] shrink-0 sm:w-[48%] lg:w-[31%] xl:w-[24%]">
               <BackdropCard media={item} />
             </div>
+          ))}
+        </div>
+        <div className="mt-3 flex justify-center gap-1.5">
+          {visibleItems.map((item, itemIndex) => (
+            <button
+              key={item.id}
+              type="button"
+              aria-label={`Show featured movie ${itemIndex + 1}`}
+              aria-current={itemIndex === index ? "true" : undefined}
+              onClick={() => setIndex(itemIndex)}
+              className={`h-1 rounded-full transition-all ${itemIndex === index ? "w-8 bg-white" : "w-2 bg-white/30 hover:bg-white/60"}`}
+            />
           ))}
         </div>
       </div>
