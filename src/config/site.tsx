@@ -66,22 +66,22 @@ export const siteConfig: SiteConfigType = {
   queryLists: {
     movies: [
       {
-        name: "Trending Movies",
+        name: "Trending Now",
         query: () => tmdb.trending.trending("movie", "day"),
         param: "todayTrending",
       },
       {
-        name: "Weekly Trending",
+        name: "This Week",
         query: () => tmdb.trending.trending("movie", "week"),
         param: "thisWeekTrending",
       },
       {
-        name: "Popular Movies",
+        name: "Popular",
         query: () => tmdb.movies.popular(),
         param: "popular",
       },
       {
-        name: "Now Playing",
+        name: "New Releases",
         query: () => tmdb.movies.nowPlaying(),
         param: "nowPlaying",
       },
@@ -98,17 +98,17 @@ export const siteConfig: SiteConfigType = {
     ],
     tvShows: [
       {
-        name: "Trending TV Shows",
+        name: "Trending TV",
         query: () => tmdb.trending.trending("tv", "day"),
         param: "todayTrending",
       },
       {
-        name: "Weekly TV Picks",
+        name: "This Week on TV",
         query: () => tmdb.trending.trending("tv", "week"),
         param: "thisWeekTrending",
       },
       {
-        name: "Popular TV Shows",
+        name: "Popular TV",
         // @ts-expect-error: tmdb-ts result omits a required field from the shared TV type.
         query: () => tmdb.tvShows.popular(),
         param: "popular",
