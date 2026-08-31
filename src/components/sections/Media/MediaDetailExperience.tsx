@@ -2,13 +2,11 @@
 
 import BookmarkButton from "@/components/ui/button/BookmarkButton";
 import { siteConfig } from "@/config/site";
-import { getImageUrl, mutateMovieTitle, mutateTvShowTitle } from "@/utils/movies";
+import { getImageUrl } from "@/utils/movies";
 import { Button, Image } from "@heroui/react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { HiArrowLeft, HiCalendarDays, HiCheckCircle, HiClock, HiPlay, HiShare, HiStar } from "react-icons/hi2";
-import { MovieDetails } from "tmdb-ts/dist/types/movies";
-import { TvShowDetails } from "tmdb-ts/dist/types/tv-shows";
 import { SavedMovieDetails } from "@/types/movie";
 
 type MediaImage = {
@@ -31,10 +29,10 @@ type MediaCastMember = {
   profile_path?: string | null;
 };
 
-// TMDB's Recommendation type intentionally has optional poster_path/title/name
-// fields, so it is not assignable to the stricter Movie/TV list types. Keep the
-// detail-page rail structural instead of pretending recommendation payloads are
-// complete Movie/TV objects.
+// Keep this prop type structural. tmdb-ts's AppendToResponse types contain
+// Recommendation[] whose poster_path/title/name fields are optional. They are
+// deliberately different from the stricter Movie/TV list types, so using
+// Movie | TV here creates a false incompatibility at the page boundary.
 type RelatedMedia = {
   id: number;
   poster_path?: string | null;
@@ -42,7 +40,28 @@ type RelatedMedia = {
   name?: string;
 };
 
-type MediaDetail = (MovieDetails | TvShowDetails) & {
+type MediaGenre = {
+  id: number;
+  name: string;
+};
+
+type MediaDetail = {
+  id: number;
+  title?: string;
+  name?: string;
+  original_title?: string;
+  original_name?: string;
+  overview?: string | null;
+  adult?: boolean;
+  backdrop_path?: string | null;
+  poster_path?: string | null;
+  release_date?: string;
+  first_air_date?: string;
+  vote_average?: number;
+  runtime?: number | null;
+  number_of_seasons?: number;
+  number_of_episodes?: number;
+  genres?: MediaGenre[];
   images?: {
     backdrops?: MediaImage[];
     logos?: MediaImage[];
@@ -60,19 +79,41 @@ interface Props {
 
 const MediaDetailExperience: React.FC<Props> = ({ media, type }) => {
   const isMovie = type === "movie";
-  const title = isMovie ? mutateMovieTitle(media as MovieDetails) : mutateTvShowTitle(media as TvShowDetails);
-  const year = isMovie ? media.release_date?.slice(0, 4) : media.first_air_date?.slice(0, 4);
+  const title = (isMovie ? media.title ?? media.original_title : media.name ?? media.original_name) || "Untitled";
+  const year = (isMovie ? media.release_date : media.first_air_date)?.slice(0, 4);
   const backdrop = getImageUrl(media.backdrop_path, "backdrop", true);
   const poster = getImageUrl(media.poster_path, "poster");
-  const runtime = isMovie ? (media as MovieDetails).runtime : undefined;
-  const seasons = !isMovie ? (media as TvShowDetails).number_of_seasons : undefined;
-  const episodes = !isMovie ? (media as TvShowDetails).number_of_episodes : undefined;
+  const runtime = isMovie ? media.runtime : undefined;
+  const seasons = !isMovie ? media.number_of_seasons : undefined;
+  const episodes = !isMovie ? media.number_of_episodes : undefined;
   const genres = (media.genres ?? []).slice(0, 4);
   const cast = (media.credits?.cast ?? []).filter((person) => person.name).slice(0, 8);
-  const related = (media.recommendations?.results?.length ? media.recommendations.results : media.similar?.results ?? []).filter((item) => item.poster_path).slice(0, 8);
-  const trailer = useMemo(() => media.videos?.results?.find((video) => video.site === "YouTube" && video.type === "Trailer" && video.official) ?? media.videos?.results?.find((video) => video.site === "YouTube" && video.type === "Trailer"), [media.videos?.results]);
-  const bookmarkData: SavedMovieDetails = { type, adult: "adult" in media ? Boolean(media.adult) : false, backdrop_path: media.backdrop_path, id: media.id, poster_path: media.poster_path, release_date: (isMovie ? media.release_date : media.first_air_date) || "1900-01-01", title, vote_average: media.vote_average, saved_date: new Date().toISOString() };
-  const share = async () => { const url = window.location.href; try { if (navigator.share) await navigator.share({ title, text: `Watch ${title} on ${siteConfig.name}`, url }); else await navigator.clipboard.writeText(url); } catch { /* cancelled */ } };
+  const related = (media.recommendations?.results?.length ? media.recommendations.results : media.similar?.results ?? [])
+    .filter((item) => item.poster_path)
+    .slice(0, 8);
+  const trailer = useMemo(
+    () => media.videos?.results?.find((video) => video.site === "YouTube" && video.type === "Trailer" && video.official)
+      ?? media.videos?.results?.find((video) => video.site === "YouTube" && video.type === "Trailer"),
+    [media.videos?.results],
+  );
+  const bookmarkData: SavedMovieDetails = {
+    type,
+    adult: Boolean(media.adult),
+    backdrop_path: media.backdrop_path ?? null,
+    id: media.id,
+    poster_path: media.poster_path ?? null,
+    release_date: (isMovie ? media.release_date : media.first_air_date) || "1900-01-01",
+    title,
+    vote_average: media.vote_average ?? 0,
+    saved_date: new Date().toISOString(),
+  };
+  const share = async () => {
+    const url = window.location.href;
+    try {
+      if (navigator.share) await navigator.share({ title, text: `Watch ${title} on ${siteConfig.name}`, url });
+      else await navigator.clipboard.writeText(url);
+    } catch { /* cancelled */ }
+  };
 
   return <div className="relative -mx-3 min-h-screen overflow-hidden bg-[#070708] sm:-mx-5">
     <section className="relative min-h-[72svh] overflow-hidden sm:min-h-[78svh]">
